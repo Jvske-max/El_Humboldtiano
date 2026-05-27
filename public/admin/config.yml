@@ -1,11 +1,9 @@
 backend:
   name: github
-  repo: Jvske-max/El_Humboldtiano
+  repo: AlvaNulluser/El_Humboldtiano
   branch: main
-  base_url: https://el-humboldtiano.vercel.app
+  base_url: https://el-humboldtiano2.vercel.app
   auth_endpoint: api/auth
-
-publish_mode: editorial_workflow
 
 media_folder: public/img
 public_folder: /img
@@ -17,9 +15,9 @@ collections:
     folder: src/content/articles
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    preview_path: articulo/{{slug}}
+    preview_path: articulo/{{year}}-{{month}}-{{day}}-{{slug}}
     editor:
-      preview: false
+      preview: true
     fields:
       - label: Título
         name: title
@@ -38,8 +36,10 @@ collections:
       - label: Etiquetas
         name: tags
         widget: list
+        max: 5
         required: false
         field:
+          name: tag
           widget: select
           options:
             - Música
@@ -73,8 +73,9 @@ collections:
         name: publishDate
         widget: datetime
         required: true
-        date_format: DD/MM/YYYY
+        date_format: dd/MM/yyyy
         time_format: HH:mm
+        format: yyyy-MM-dd'T'HH:mm:ss.SSSXXX
       - label: Imagen de portada
         name: coverImage
         widget: image
@@ -95,6 +96,7 @@ collections:
         widget: select
         required: true
         default: Borrador
+        hint: "Etiqueta interna (no automatiza publicación). Para enviar a revisión, compartí el link del artículo."
         options:
           - Borrador
           - En revisión

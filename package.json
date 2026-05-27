@@ -21,6 +21,9 @@
     "astro": "^6.3.3",
     "typescript": "^5.7.0"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "@playwright/test": "^1.49.0",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",

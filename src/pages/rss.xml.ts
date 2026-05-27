@@ -12,7 +12,7 @@ export const GET: APIRoute = async (context) => {
     title: "El Humboldtiano",
     description:
       "Periódico Virtual de la Universidad Alejandro de Humboldt",
-    site: context.site ?? "https://el-humboldtiano.vercel.app",
+    site: context.site ?? "https://el-humboldtiano2.vercel.app",
     items: articles.map((article) => ({
       title: article.data.title,
       description:

@@ -12,6 +12,12 @@
  *   1. CMS popup → GET /api/auth (no code) → redirect to GitHub authorize
  *   2. GitHub redirects back with ?code=... → exchange for access token
  *   3. Return HTML that posts the token back to the CMS parent window
+ *      using the NetlifyAuthenticator string-based postMessage protocol.
+ *
+ * Protocol: postMessage("authorizing:github", "*") handshake,
+ *           then postMessage("authorization:github:success:{json}", "*").
+ *           StaticCMS v3 NetlifyAuthenticator uses indexOf to parse strings,
+ *           so the payload MUST be a concatenated string, not an object.
  */
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
@@ -45,7 +51,9 @@ export default async function handler(
 
   const code = req.query.code as string | undefined;
 
-  // Step 1: No code yet → redirect to GitHub authorization page
+  const code = req.query.code as string | undefined;
+
+  // ── Step 1: No code → redirect to GitHub authorization page ────────────
   if (!code) {
     const redirectUri = `${origin}/api/auth`;
     const params = new URLSearchParams({
@@ -58,7 +66,7 @@ export default async function handler(
     return;
   }
 
-  // Step 2: Code received → exchange for access token
+  // ── Step 2: Code received → exchange for access token ──────────────────
   try {
     const tokenResponse = await fetch(
       "https://github.com/login/oauth/access_token",
@@ -73,7 +81,7 @@ export default async function handler(
           client_secret: GITHUB_CLIENT_SECRET,
           code,
         }),
-      }
+      },
     );
 
     const tokenData = await tokenResponse.json();
@@ -83,8 +91,10 @@ export default async function handler(
       return;
     }
 
-    // Return an HTML page that posts the token back to the CMS parent window.
-    // StaticCMS expects a postMessage from the popup with { type, token }.
+    // Return HTML that posts the token back via the NetlifyAuthenticator
+    // STRING protocol. The key insight: NetlifyAuthenticator in StaticCMS
+    // uses e.data.indexOf("authorization:github:success:") to parse the
+    // message, so postMessage MUST receive a string, not an object.
     const html = `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><title>Autenticando…</title></head>
